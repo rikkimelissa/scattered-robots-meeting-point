@@ -5,6 +5,8 @@ Output: A triangulated terrain map with edges that are functions of x and y
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 10),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 7),(47, 30, 1)])
 
@@ -29,11 +31,12 @@ def terrain(p):
     xRange =  [a+(min(px)-2) for a in range(max(px)-min(px)+4)]
     yRange =  [a+(min(py)-2) for a in range(max(py)-min(py)+4)]    
     xx, yy = np.meshgrid(xRange,yRange)
+    #zz = (-norm[0]*xx - norm[1]*yy - d)*1./norm[2]
     
-    # Find the height of each point in the triangulation
-    zz = (-norm[0]*xx - norm[1]*yy - d)*1./norm[2]
-    plt3d = plt.figure().gca(projection='3d')
-    plt3d.plot_surface(xx,yy,zz, color='blue')
+    # Plot the terrain
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2)
     plt.show(block=False)
 
 def defineEquations(t, p, terrainList):
