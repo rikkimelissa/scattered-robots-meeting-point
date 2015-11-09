@@ -9,40 +9,67 @@ import matplotlib.pyplot as plt
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 10),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 7),(47, 30, 1)])
 
 def terrain(p):
+
+    # Calculate the Delaunay triangulation and return the triangles and the edge diagram
     tri, edgeList = DelaunayTri(p)
     plt.cla()
     for s in tri:
         plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
     plt.axis([0, 50, 0, 60])
     plt.show(block=False) 
+    
+    # Calculate the slope equations for each triangle and return as a list
+    terrainList = np.array([[0,0,0,0,0,0,0,0,0,0]])
+    for t in tri:
+        terrainList = defineEquations(t, p, terrainList)
+          
+    px = p[:,0]
+    py = p[:,1]
+    pz = p[:,2]
+    xRange =  [a+(min(px)-2) for a in range(max(px)-min(px)+4)]
+    yRange =  [a+(min(py)-2) for a in range(max(py)-min(py)+4)]    
+    xx, yy = np.meshgrid(xRange,yRange)
+    
+    # Find the height of each point in the triangulation
+    zz = (-norm[0]*xx - norm[1]*yy - d)*1./norm[2]
+    plt3d = plt.figure().gca(projection='3d')
+    plt3d.plot_surface(xx,yy,zz, color='blue')
+    plt.show(block=False)
+
+def defineEquations(t, p, terrainList):
     u = np.array([t[0],t[1]])
     v = np.array([t[2],t[3]])
     w = np.array([t[4],t[5]])
     
-    a = np.where(points[:,0]==u[0])[0]
-    b = np.where(points[:,1]==u[1])[0]
+    a = np.where(p[:,0]==u[0])[0]
+    b = np.where(p[:,1]==u[1])[0]
     ind = np.intersect1d(a,b)[0]
-    z = points[ind][2]
+    z = p[ind][2]
     u = np.concatenate((u,[z]))
     
-    a = np.where(points[:,0]==v[0])[0]
-    b = np.where(points[:,1]==v[1])[0]
+    a = np.where(p[:,0]==v[0])[0]
+    b = np.where(p[:,1]==v[1])[0]
     ind = np.intersect1d(a,b)[0]
-    z = points[ind][2]
+    z = p[ind][2]
     v = np.concatenate((v,[z]))
     
-    a = np.where(points[:,0]==w[0])[0]
-    b = np.where(points[:,1]==w[1])[0]
+    a = np.where(p[:,0]==w[0])[0]
+    b = np.where(p[:,1]==w[1])[0]
     ind = np.intersect1d(a,b)[0]
-    z = points[ind][2]
+    z = p[ind][2]
     w = np.concatenate((w,[z]))
-    definePlane(u,v,w)
-
+    
+    norm, d = definePlane(u,v,w)
+    f = np.concatenate((t,norm,[d]))
+    terrainList = np.concatenate((terrainList,[f]),axis=0)
+    return terrainList
+    
 def definePlane(p,q,r):
     v1 = q-p
     v2 = r-p
-    norm = np.cross(v1,v2)     
-    
+    norm = np.cross(v1,v2)
+    d = -np.sum(p*norm)     
+    return norm, d
     
 def DelaunayTri(p):
     px = p[:,0]
@@ -168,4 +195,4 @@ def check_turn_dir(p1,p2,p3):
     return dir
     
 if __name__ == '__main__':
-    DelaunayTri(points)
+    terrain(points)
