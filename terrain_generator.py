@@ -8,6 +8,42 @@ import matplotlib.pyplot as plt
 
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 10),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 7),(47, 30, 1)])
 
+def terrain(p):
+    tri, edgeList = DelaunayTri(p)
+    plt.cla()
+    for s in tri:
+        plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
+    plt.axis([0, 50, 0, 60])
+    plt.show(block=False) 
+    u = np.array([t[0],t[1]])
+    v = np.array([t[2],t[3]])
+    w = np.array([t[4],t[5]])
+    
+    a = np.where(points[:,0]==u[0])[0]
+    b = np.where(points[:,1]==u[1])[0]
+    ind = np.intersect1d(a,b)[0]
+    z = points[ind][2]
+    u = np.concatenate((u,[z]))
+    
+    a = np.where(points[:,0]==v[0])[0]
+    b = np.where(points[:,1]==v[1])[0]
+    ind = np.intersect1d(a,b)[0]
+    z = points[ind][2]
+    v = np.concatenate((v,[z]))
+    
+    a = np.where(points[:,0]==w[0])[0]
+    b = np.where(points[:,1]==w[1])[0]
+    ind = np.intersect1d(a,b)[0]
+    z = points[ind][2]
+    w = np.concatenate((w,[z]))
+    definePlane(u,v,w)
+
+def definePlane(p,q,r):
+    v1 = q-p
+    v2 = r-p
+    norm = np.cross(v1,v2)     
+    
+    
 def DelaunayTri(p):
     px = p[:,0]
     py = p[:,1]
@@ -41,20 +77,21 @@ def DelaunayTri(p):
                 T = np.concatenate((T,t3),axis=0)
                 T = np.delete(T, i, 0)
                 T = np.array([x for x in set(tuple(x) for x in T) & set(tuple(x) for x in edgeList)])
-                plt.cla()
-                for s in T:
-                    plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
-                plt.axis([0, 50, 0, 60])
-                plt.show(block=False)
-
-                
-#            for v in range[3]:t 
-#                if pointOnLine(r, [t[v], t[(v+1)%3]]):
-#                    t1 = legalizeEdge(r, t[(v+2)%3],  t[v])
-#                    t2 = legalizeEdge(r, t[(v+1)%3], t[(v+2)%3])
-#                    T = np.delete(T, i, 1)
-#                    T = np.c_[T,t1]
-#                    T = np.c_[T,t2]                    
+              
+#            for v in range(3):
+#            # check here if something goes wrong
+#                if pointOnLine(r, [t[v],t[v+1],t[(v+2)%6],t[(v+3)%6]]):
+#                    t1, edgeList = legalizeEdge(r, t[(v+2)%3],  t[v], edgeList)
+#                    t2, edgeList = legalizeEdge(r, t[(v+1)%3], t[(v+2)%3], edgeList)
+#                    T = np.delete(T, i, 0)
+#                    T = np.concatenate((T,t1),axis=0)
+#                    T = np.concatenate((T,t2),axis=0)  
+    Th = T
+    nT = T.shape[0]  
+    for i,tri in enumerate(T[::-1]):
+        if (np.intersect1d(tri,p1neg)).size > 0 or (np.intersect1d(tri,p2neg)).size > 0:
+            Th = np.delete(Th,nT-i-1,0)         
+    return Th, edgeList             
 
 def legalizeEdge(pr, pi, pj, edgeList):
     indOpp = np.where((edgeList[:,0:4]==np.concatenate((pj, pi))).all(axis=1))
@@ -68,8 +105,7 @@ def legalizeEdge(pr, pi, pj, edgeList):
             edgeList = np.concatenate((edgeList,[e1],[e2]),axis=0)
             tri = [np.concatenate((pr, pi, pj))]
         else:
-            edgeList = np.delete(edgeList,indOpp[0][0],0)
-#            edgeList = np.delete(edgeList,indCurr[0][0],0)         
+            edgeList = np.delete(edgeList,indOpp[0][0],0)       
             tri1, edgeList = legalizeEdge(pr, pi, pk, edgeList)
             tri2, edgeList = legalizeEdge(pr, pk, pj, edgeList)
             tri = np.concatenate((tri1,tri2),axis=0)
@@ -113,10 +149,11 @@ def line_intersect(l1,l2):
     return intersect
     
 def pointOnLine(p, l):
-    return (check_turn_dir(p, [l[0], l[1]], [l[2], l[3]]) == 0)
+    ans = (check_turn_dir(p, [l[0], l[1]], [l[2], l[3]]) == 0)
+    return ans
 
 def pointInTriangle(p, t):
-    if all(r == t[0:2]) or all(r == t[2:4]) or all(r == t[4:6]):
+    if all(p == t[0:2]) or all(p == t[2:4]) or all(p == t[4:6]):
         return False
     else:
         b1 = check_turn_dir(p, [t[0],t[1]], [t[2],t[3]]) < 0
