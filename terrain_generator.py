@@ -40,9 +40,11 @@ def DelaunayTri(p):
                 T = np.concatenate((T,t2),axis=0)
                 T = np.concatenate((T,t3),axis=0)
                 T = np.delete(T, i, 0)
+                T = np.array([x for x in set(tuple(x) for x in T) & set(tuple(x) for x in edgeList)])
                 plt.cla()
                 for s in T:
-                    plt.plot([s[0],s[2],s[4]],[s[1],s[3],s[5]])
+                    plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
+                plt.axis([0, 50, 0, 60])
                 plt.show(block=False)
 
                 
@@ -67,13 +69,7 @@ def legalizeEdge(pr, pi, pj, edgeList):
             tri = [np.concatenate((pr, pi, pj))]
         else:
             edgeList = np.delete(edgeList,indOpp[0][0],0)
-            edgeList = np.delete(edgeList,indCurr[0][0],0)
-#            e1 = np.concatenate((pr,pk,pj))
-#            e2 = np.concatenate((pk,pr,pi))
-#            edgeList = np.concatenate((edgeList,[e1],[e2]),axis=0)
-#            t1 = np.concatenate((pr,pi,pk))
-#            t2 = np.concatenate((pr,pk,pj))
-#            
+#            edgeList = np.delete(edgeList,indCurr[0][0],0)         
             tri1, edgeList = legalizeEdge(pr, pi, pk, edgeList)
             tri2, edgeList = legalizeEdge(pr, pk, pj, edgeList)
             tri = np.concatenate((tri1,tri2),axis=0)
@@ -86,7 +82,7 @@ def legalizeEdge(pr, pi, pj, edgeList):
     return tri, edgeList
     
 def legal(pi,pj,pk,pr):
-    if ((pi[0]-pj[0])^2 + (pi[1]-pj[1])^2) > ((pk[0]-pr[0])^2 + (pk[1]-pr[1])^2):
+    if ((pi[0]-pj[0])**2 + (pi[1]-pj[1])**2) > ((pk[0]-pr[0])**2 + (pk[1]-pr[1])**2):
         if not(line_intersect([pi,pj],[pk,pr])):
             return True
         else:
