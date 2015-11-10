@@ -20,7 +20,7 @@ def terrain(p):
     plt.axis([0, 50, 0, 60])
     plt.show(block=False) 
     
-    # Calculate the slope equations for each triangle and return as a list
+    # Calculate the slope equations for each triangle and return as a list with order: [x1, y1, x2, y2, x3, y3, norm[1], norm[2], norm[3], d]
     terrainList = np.array([[0,0,0,0,0,0,0,0,0,0]])
     for t in tri:
         terrainList = defineEquations(t, p, terrainList)
@@ -34,10 +34,10 @@ def terrain(p):
     #zz = (-norm[0]*xx - norm[1]*yy - d)*1./norm[2]
     
     # Plot the terrain
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2)
-    plt.show(block=False)
+#    fig = plt.figure()
+#    ax = fig.gca(projection='3d')
+#    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2)
+#    plt.show(block=False)
 
 def defineEquations(t, p, terrainList):
     u = np.array([t[0],t[1]])
@@ -95,6 +95,7 @@ def DelaunayTri(p):
     T = t1
     # Compute a random permutation of the rest of the points
     np.random.shuffle(p)
+#    ps = sorted(p, key=lambda x:x[0])
     for r3 in p:
         r = r3[0:2]
         for i,t in enumerate(T):
@@ -107,7 +108,11 @@ def DelaunayTri(p):
                 T = np.concatenate((T,t3),axis=0)
                 T = np.delete(T, i, 0)
                 T = np.array([x for x in set(tuple(x) for x in T) & set(tuple(x) for x in edgeList)])
-              
+                plt.cla()
+                for s in T:
+                    plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
+                plt.axis([0, 50, 0, 60])
+                plt.show(block=False) 
 #            for v in range(3):
 #            # check here if something goes wrong
 #                if pointOnLine(r, [t[v],t[v+1],t[(v+2)%6],t[(v+3)%6]]):
@@ -135,10 +140,12 @@ def legalizeEdge(pr, pi, pj, edgeList):
             edgeList = np.concatenate((edgeList,[e1],[e2]),axis=0)
             tri = [np.concatenate((pr, pi, pj))]
         else:
+            edgeList[indCurr[0][0]][4:6] = pr
             edgeList = np.delete(edgeList,indOpp[0][0],0)       
             tri1, edgeList = legalizeEdge(pr, pi, pk, edgeList)
             tri2, edgeList = legalizeEdge(pr, pk, pj, edgeList)
             tri = np.concatenate((tri1,tri2),axis=0)
+   #         edgeList = np.delete(edgeList,indCurr[0][0],0)
     else:
         edgeList[indCurr[0][0]][4:6] = pr
         e1 = np.concatenate((pr, pi, pj))
