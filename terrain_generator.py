@@ -77,7 +77,7 @@ def definePlane(p,q,r):
     v1 = q-p
     v2 = r-p
     norm = np.cross(v1,v2)
-    d = -np.sum(p*norm)     
+    d = np.sum(p*norm)     
     return norm, d
     
 def DelaunayTri(p):
