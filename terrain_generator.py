@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 Input: A set P of n+1 points with assigned heights
 Output: A triangulated terrain map with edges that are functions of x and y
@@ -8,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
-points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 10),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 7),(47, 30, 1)])
+points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 10),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 7),(47, 30, 1),(2,1,8),(40,2,7),(7,16,2),(25,10,1)])
 
 def terrain(p):
 
@@ -24,6 +26,7 @@ def terrain(p):
     terrainList = np.array([[0,0,0,0,0,0,0,0,0,0]])
     for t in tri:
         terrainList = defineEquations(t, p, terrainList)
+    terrainList = np.delete(terrainList,0,0)
           
     px = p[:,0]
     py = p[:,1]
@@ -34,11 +37,13 @@ def terrain(p):
     #zz = (-norm[0]*xx - norm[1]*yy - d)*1./norm[2]
     
     # Plot the terrain
-#    fig = plt.figure()
-#    ax = fig.gca(projection='3d')
-#    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2)
-#    plt.show(block=False)
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2)
+    plt.show(block=False)
+    return terrainList
 
+# Find the index of each triangle on the list of points and assign correct z height, then return the list of triangles with its associated height equation
 def defineEquations(t, p, terrainList):
     u = np.array([t[0],t[1]])
     v = np.array([t[2],t[3]])
@@ -66,7 +71,8 @@ def defineEquations(t, p, terrainList):
     f = np.concatenate((t,norm,[d]))
     terrainList = np.concatenate((terrainList,[f]),axis=0)
     return terrainList
-    
+
+# Use the height of the triangles to calculate the equations of each 3D triangle   
 def definePlane(p,q,r):
     v1 = q-p
     v2 = r-p
@@ -95,10 +101,10 @@ def DelaunayTri(p):
     T = t1
     # Compute a random permutation of the rest of the points
     np.random.shuffle(p)
-#    ps = sorted(p, key=lambda x:x[0])
     for r3 in p:
         r = r3[0:2]
         for i,t in enumerate(T):
+            # If the point is in the triangle, calculate the legal edges of the 3 new triangles and add these triangles and their edges to the lists
             if pointInTriangle(r, t):              
                 t1, edgeList = legalizeEdge(r,[t[0],t[1]],[t[2],t[3]],edgeList)
                 t2, edgeList = legalizeEdge(r,[t[2],t[3]],[t[4],t[5]],edgeList)
@@ -109,18 +115,6 @@ def DelaunayTri(p):
                 T = np.delete(T, i, 0)
                 T = np.array([x for x in set(tuple(x) for x in T) & set(tuple(x) for x in edgeList)])
                 plt.cla()
-                for s in T:
-                    plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
-                plt.axis([0, 50, 0, 60])
-                plt.show(block=False) 
-#            for v in range(3):
-#            # check here if something goes wrong
-#                if pointOnLine(r, [t[v],t[v+1],t[(v+2)%6],t[(v+3)%6]]):
-#                    t1, edgeList = legalizeEdge(r, t[(v+2)%3],  t[v], edgeList)
-#                    t2, edgeList = legalizeEdge(r, t[(v+1)%3], t[(v+2)%3], edgeList)
-#                    T = np.delete(T, i, 0)
-#                    T = np.concatenate((T,t1),axis=0)
-#                    T = np.concatenate((T,t2),axis=0)  
     Th = T
     nT = T.shape[0]  
     for i,tri in enumerate(T[::-1]):
@@ -128,6 +122,7 @@ def DelaunayTri(p):
             Th = np.delete(Th,nT-i-1,0)         
     return Th, edgeList             
 
+# This functions legalizes all the edges. If for a given edge, the intersecting edge that could be drawn is shorter than the given edge, replace this edge with the intersecting edge. Recursive function
 def legalizeEdge(pr, pi, pj, edgeList):
     indOpp = np.where((edgeList[:,0:4]==np.concatenate((pj, pi))).all(axis=1))
     indCurr = np.where((edgeList[:,0:4]==np.concatenate((pi, pj))).all(axis=1))
@@ -145,7 +140,6 @@ def legalizeEdge(pr, pi, pj, edgeList):
             tri1, edgeList = legalizeEdge(pr, pi, pk, edgeList)
             tri2, edgeList = legalizeEdge(pr, pk, pj, edgeList)
             tri = np.concatenate((tri1,tri2),axis=0)
-   #         edgeList = np.delete(edgeList,indCurr[0][0],0)
     else:
         edgeList[indCurr[0][0]][4:6] = pr
         e1 = np.concatenate((pr, pi, pj))
@@ -153,7 +147,8 @@ def legalizeEdge(pr, pi, pj, edgeList):
         edgeList = np.concatenate((edgeList,[e1],[e2]),axis=0)
         tri = [np.concatenate((pr, pi, pj))]
     return tri, edgeList
-    
+
+# Defines if a given edge is legal
 def legal(pi,pj,pk,pr):
     if ((pi[0]-pj[0])**2 + (pi[1]-pj[1])**2) > ((pk[0]-pr[0])**2 + (pk[1]-pr[1])**2):
         if not(line_intersect([pi,pj],[pk,pr])):
@@ -163,6 +158,7 @@ def legal(pi,pj,pk,pr):
     else:
         return True
 
+# Checks for line intersection
 def line_intersect(l1,l2):
 # http://www.ahinson.com/algorithms_general/Sections/Geometry/ParametricLineIntersection.pdf
     x1 = l1[0][0]
@@ -185,10 +181,14 @@ def line_intersect(l1,l2):
         y_int = False
     return intersect
     
+# Checks if three points lie on a straight line
 def pointOnLine(p, l):
-    ans = (check_turn_dir(p, [l[0], l[1]], [l[2], l[3]]) == 0)
-    return ans
+    if (check_turn_dir(p, [l[0], l[1]], [l[2], l[3]]) == 0):
+        return True
+    else:
+        return False
 
+# Checks if a point is inside a triangle
 def pointInTriangle(p, t):
     if all(p == t[0:2]) or all(p == t[2:4]) or all(p == t[4:6]):
         return False
@@ -198,6 +198,7 @@ def pointInTriangle(p, t):
         b3 = check_turn_dir(p, [t[4],t[5]], [t[0],t[1]]) < 0
         return ((b1 == b2) & (b2 == b3))
 
+# Checks the turn direction for 3 points
 def check_turn_dir(p1,p2,p3):
     seg1 = [a - b for a,b in zip(p2,p1)]
     seg2 = [a - b for a,b in zip(p3,p2)]
