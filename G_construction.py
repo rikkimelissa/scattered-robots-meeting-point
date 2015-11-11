@@ -37,8 +37,8 @@ def construct_G(terrain):
         sp.x = np.delete(sp.x,0)
         sp.y = np.delete(sp.y,0)
         sp.z = np.delete(sp.z,0)
-        sp.edge = []
         spList.append(sp)
+        sp.edge = []
     
     # Plot Steiner points
     fig = plt.figure()
@@ -51,16 +51,31 @@ def construct_G(terrain):
     spList = connect_vertices(spList)
 
     # Plot Steiner edges   
-#    fig = plt.figure()       
-#    ax = fig.gca(projection='3d') 
-#    for sp in spList:   
-#        for edge in sp.edge:
-#            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
-#    plt.show(block=False)
+    fig = plt.figure()       
+    ax = fig.gca(projection='3d') 
+    for sp in spList:   
+        for edge in sp.edge:
+            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
+    plt.show(block=False)
 
 def connect_vertices(spList):
     m = spList[0].x.shape[0]/3-1
     for i,sp in enumerate(spList):
+    
+        # Chain points
+        for j in range(3):
+            xo, yo, zo = [sp.x[j], sp.y[j], sp.z[j]]
+            for k in range(10):
+                xd, yd, zd = [sp.x[j*m+3+k],sp.y[j*m+3+k],sp.z[j*m+3+k]]
+                edge = [xo, yo, zo, xd, yd, zd]
+                spList[i].edge.append(edge)  
+                xo = xd
+                yo = yd
+                zo = zd
+            xd, yd, zd = [sp.x[(j+1)%3], sp.y[(j+1)%3], sp.z[(j+1)%3]]
+            edge = [xo, yo, zo, xd, yd, zd]
+            spList[i].edge.append(edge) 
+            
         # Vertex-steiner point edges  
         xo, yo, zo = [sp.x[1], sp.y[1], sp.z[1]] 
         for xd, yd, zd in zip(sp.x[2*m+3:],sp.y[2*m+3:],sp.z[2*m+3:]):
