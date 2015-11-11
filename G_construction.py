@@ -30,12 +30,14 @@ def construct_G(terrain):
 
     spList = []
     
+    # Calculate Steiner points
     for tri in terrain:
         sp = steiner_points()
         sp = add_Steiners(tri,sp)        
         sp.x = np.delete(sp.x,0)
         sp.y = np.delete(sp.y,0)
         sp.z = np.delete(sp.z,0)
+        sp.edge = []
         spList.append(sp)
     
     # Plot Steiner points
@@ -45,7 +47,16 @@ def construct_G(terrain):
         ax.scatter(sp.x, sp.y, sp.z)
     plt.show(block=False)
     
-    se = connect_vertices(spList)
+    # Calculate Steiner edges
+    spList = connect_vertices(spList)
+
+    # Plot Steiner edges   
+#    fig = plt.figure()       
+#    ax = fig.gca(projection='3d') 
+#    for sp in spList:   
+#        for edge in sp.edge:
+#            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
+#    plt.show(block=False)
 
 def connect_vertices(spList):
     m = spList[0].x.shape[0]/3-1
@@ -73,12 +84,7 @@ def connect_vertices(spList):
             for xd, yd, zd in zip(sp.x[m+3:2*m+3],sp.y[m+3:2*m+3],sp.z[m+3:2*m+3]):
                 edge = [xo, yo, zo, xd, yd, zd]
                 spList[i].edge.append(edge)  
-       
-        fig = plt.figure()       
-        ax = fig.gca(projection='3d')       
-        for edge in spList[i].edge:
-            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
-        plt.show(block=False)
+    return spList
         
 
 class steiner_points:
@@ -112,7 +118,6 @@ def add_Steiners(tri, sp, m=10):
     for i in range(m):
         xd,yd = ((w-v)/float(m+1))
         x,y = v + (i+1)*np.array([xd,yd])
-        print x,y
         z = float(d - norm[0]*x - norm[1]*y)/norm[2]
         sp.x = np.append(sp.x,x)
         sp.y = np.append(sp.y,y)
