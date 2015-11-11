@@ -10,13 +10,13 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
-points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 10),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 7),(47, 30, 1),(2,1,8),(40,2,7),(7,16,2),(25,10,1)])
+points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
 
 def terrain(p):
 
     # Calculate the Delaunay triangulation and return the triangles and the edge diagram
     tri, edgeList = DelaunayTri(p)
-    plt.cla()
+    plt.close('all')
     for s in tri:
         plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
     plt.axis([0, 50, 0, 60])
@@ -27,7 +27,7 @@ def terrain(p):
     for t in tri:
         terrainList = defineEquations(t, p, terrainList)
     terrainList = np.delete(terrainList,0,0)
-          
+    
     px = p[:,0]
     py = p[:,1]
     pz = p[:,2]
@@ -71,13 +71,13 @@ def defineEquations(t, p, terrainList):
     f = np.concatenate((t,norm,[d]))
     terrainList = np.concatenate((terrainList,[f]),axis=0)
     return terrainList
-
-# Use the height of the triangles to calculate the equations of each 3D triangle   
+    
+# Use the height of the triangles to calculate the equations of each 3D triangle
 def definePlane(p,q,r):
     v1 = q-p
     v2 = r-p
     norm = np.cross(v1,v2)
-    d = np.sum(p*norm)     
+    d = -np.sum(p*norm)     
     return norm, d
     
 def DelaunayTri(p):
@@ -101,10 +101,10 @@ def DelaunayTri(p):
     T = t1
     # Compute a random permutation of the rest of the points
     np.random.shuffle(p)
+#    ps = sorted(p, key=lambda x:x[0])
     for r3 in p:
         r = r3[0:2]
         for i,t in enumerate(T):
-            # If the point is in the triangle, calculate the legal edges of the 3 new triangles and add these triangles and their edges to the lists
             if pointInTriangle(r, t):              
                 t1, edgeList = legalizeEdge(r,[t[0],t[1]],[t[2],t[3]],edgeList)
                 t2, edgeList = legalizeEdge(r,[t[2],t[3]],[t[4],t[5]],edgeList)
@@ -115,6 +115,21 @@ def DelaunayTri(p):
                 T = np.delete(T, i, 0)
                 T = np.array([x for x in set(tuple(x) for x in T) & set(tuple(x) for x in edgeList)])
                 plt.cla()
+                
+            for v in range(3):
+            # check here if something goes wrong
+                if not all(r==[t[2*v],t[2*v+1]]) and not all(r==[t[(2*v+2)%6],t[(2*v+3)%6]]):
+                    pi = [t[2*v],t[2*v+1]]
+                    pj = [t[(2*v+2)%6],t[(2*v+3)%6]]
+                    pk = [t[(2*v+4)%6],t[(2*v+5)%6]]
+                    if ((pi[0]-r[0])*(pj[0]-r[0]) < 0) and ((pi[1]-r[1])*(pj[1]-r[1]) < 0):
+                        if pointOnLine(r,np.concatenate((pi,pj))):
+                            print r, t
+                            t1, edgeList = legalizeEdge(r,pk,pi, edgeList)
+                            t2, edgeList = legalizeEdge(r,pj,pk, edgeList)
+                            T = np.delete(T, i, 0)
+                            T = np.concatenate((T,t1),axis=0)
+                            T = np.concatenate((T,t2),axis=0)  
     Th = T
     nT = T.shape[0]  
     for i,tri in enumerate(T[::-1]):
@@ -126,6 +141,7 @@ def DelaunayTri(p):
 def legalizeEdge(pr, pi, pj, edgeList):
     indOpp = np.where((edgeList[:,0:4]==np.concatenate((pj, pi))).all(axis=1))
     indCurr = np.where((edgeList[:,0:4]==np.concatenate((pi, pj))).all(axis=1))
+    print indOpp
     if all(indOpp):
         pk = edgeList[indOpp[0][0]][4:6]
         if legal(pi, pj, pk, pr):
@@ -169,6 +185,8 @@ def line_intersect(l1,l2):
     y3 = l2[0][1]
     x4 = l2[1][0]
     y4 = l2[1][1]
+    if (((x4-x3)*(y2-y1) - (x2-x1)*(y4-y3)) == 0) or (((x4-x3)*(y2-y1) - (x2-x1)*(y4-y3)) == 0):
+        return False
     s = float((x4-x3)*(y3-y1) - (x3-x1)*(y4-y3))/((x4-x3)*(y2-y1) - (x2-x1)*(y4-y3))
     t = float((x2-x1)*(y3-y1) - (x3-x1)*(y2-y1))/((x4-x3)*(y2-y1) - (x2-x1)*(y4-y3))
     if (s>=0 and s<=1 and t>=0 and t<=1):
