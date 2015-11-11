@@ -28,30 +28,64 @@ terrain = np.array([[   25,    10,    21,    21,    15,     9,    -7,   -44,   1
     
 def construct_G(terrain):
 
-    sp = steiner_points()
+    spList = []
     
     for tri in terrain:
+        sp = steiner_points()
         sp = add_Steiners(tri,sp)        
-    sp.x = np.delete(sp.x,0)
-    sp.y = np.delete(sp.y,0)
-    sp.z = np.delete(sp.z,0)
-    sp.tri = np.delete(sp.tri,0)
+        sp.x = np.delete(sp.x,0)
+        sp.y = np.delete(sp.y,0)
+        sp.z = np.delete(sp.z,0)
+        spList.append(sp)
     
     # Plot Steiner points
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    ax.scatter(sp.x, sp.y, sp.z)
+    for sp in spList:
+        ax.scatter(sp.x, sp.y, sp.z)
     plt.show(block=False)
+    
+    se = connect_vertices(spList)
 
-def connect_vertices(sp):
-    for N in sp.tri:
+def connect_vertices(spList):
+    m = spList[0].x.shape[0]/3-1
+    for i,sp in enumerate(spList):
+        # Vertex-steiner point edges  
+        xo, yo, zo = [sp.x[1], sp.y[1], sp.z[1]] 
+        for xd, yd, zd in zip(sp.x[2*m+3:],sp.y[2*m+3:],sp.z[2*m+3:]):
+            edge = [xo, yo, zo, xd, yd, zd]
+            spList[i].edge.append(edge)     
+        xo, yo, zo = [sp.x[2], sp.y[2], sp.z[2]] 
+        for xd, yd, zd in zip(sp.x[3:m+3],sp.y[3:m+3],sp.z[3:m+3]):
+            edge = [xo, yo, zo, xd, yd, zd]
+            spList[i].edge.append(edge)  
+        xo, yo, zo = [sp.x[0], sp.y[0], sp.z[0]] 
+        for xd, yd, zd in zip(sp.x[m+3:2*m+3],sp.y[m+3:2*m+3],sp.z[m+3:2*m+3]):
+            edge = [xo, yo, zo, xd, yd, zd]
+            spList[i].edge.append(edge) 
+                
+        # Steiner point-steiner point edges
+        for xo, yo, zo in zip(sp.x[3:m+3], sp.y[3:m+3], sp.z[3:m+3]):
+            for xd, yd, zd in zip(sp.x[m+3:],sp.y[m+3:],sp.z[m+3:]):
+                edge = [xo, yo, zo, xd, yd, zd]
+                spList[i].edge.append(edge)
+        for xo, yo, zo in zip(sp.x[m+3:], sp.y[m+3:], sp.z[m+3:]):
+            for xd, yd, zd in zip(sp.x[m+3:2*m+3],sp.y[m+3:2*m+3],sp.z[m+3:2*m+3]):
+                edge = [xo, yo, zo, xd, yd, zd]
+                spList[i].edge.append(edge)  
+       
+        fig = plt.figure()       
+        ax = fig.gca(projection='3d')       
+        for edge in spList[i].edge:
+            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
+        plt.show(block=False)
         
 
 class steiner_points:
     x = np.array([0])
     y = np.array([0])
     z = np.array([0])
-    tri = np.array([0])
+    edge = []
 
 def add_Steiners(tri, sp, m=10):
     u = np.array([tri[0],tri[1]])
@@ -68,7 +102,7 @@ def add_Steiners(tri, sp, m=10):
     sp.z = np.append(sp.z,[uz,vz,wz])
     
     for i in range(m):
-        xd,yd = ((v-u)/float(m))
+        xd,yd = ((v-u)/float(m+1))
         x,y = u + (i+1)*np.array([xd,yd])
         z = float(d - norm[0]*x - norm[1]*y)/norm[2]
         sp.x = np.append(sp.x,x)
@@ -76,23 +110,22 @@ def add_Steiners(tri, sp, m=10):
         sp.z = np.append(sp.z,z)
         
     for i in range(m):
-        xd,yd = ((w-v)/float(m))
+        xd,yd = ((w-v)/float(m+1))
         x,y = v + (i+1)*np.array([xd,yd])
+        print x,y
         z = float(d - norm[0]*x - norm[1]*y)/norm[2]
         sp.x = np.append(sp.x,x)
         sp.y = np.append(sp.y,y)
         sp.z = np.append(sp.z,z)
         
     for i in range(m):
-        xd,yd = ((u-w)/float(m))
+        xd,yd = ((u-w)/float(m+1))
         x,y = w + (i+1)*np.array([xd,yd])
         z = float(d - norm[0]*x - norm[1]*y)/norm[2]
         sp.x = np.append(sp.x,x)
         sp.y = np.append(sp.y,y)
         sp.z = np.append(sp.z,z)
-    
-    prev = sp.tri[-1]
-    sp.tri = np.append(sp.tri,(m+3)*[prev+1])
+
     return sp
 
 
