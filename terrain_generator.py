@@ -77,7 +77,7 @@ def definePlane(p,q,r):
     v1 = q-p
     v2 = r-p
     norm = np.cross(v1,v2)
-    d = -np.sum(p*norm)     
+    d = np.sum(p*norm)     
     return norm, d
     
 def DelaunayTri(p):
@@ -124,7 +124,6 @@ def DelaunayTri(p):
                     pk = [t[(2*v+4)%6],t[(2*v+5)%6]]
                     if ((pi[0]-r[0])*(pj[0]-r[0]) < 0) and ((pi[1]-r[1])*(pj[1]-r[1]) < 0):
                         if pointOnLine(r,np.concatenate((pi,pj))):
-                            print r, t
                             t1, edgeList = legalizeEdge(r,pk,pi, edgeList)
                             t2, edgeList = legalizeEdge(r,pj,pk, edgeList)
                             T = np.delete(T, i, 0)
@@ -141,7 +140,6 @@ def DelaunayTri(p):
 def legalizeEdge(pr, pi, pj, edgeList):
     indOpp = np.where((edgeList[:,0:4]==np.concatenate((pj, pi))).all(axis=1))
     indCurr = np.where((edgeList[:,0:4]==np.concatenate((pi, pj))).all(axis=1))
-    print indOpp
     if all(indOpp):
         pk = edgeList[indOpp[0][0]][4:6]
         if legal(pi, pj, pk, pr):

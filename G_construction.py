@@ -3,8 +3,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from terrain_generator import terrain
 
-terrain = np.array([[   25,    10,    21,    21,    15,     9,    -7,   -44,   114,  -501],
+t2 = np.array([[   25,    10,    21,    21,    15,     9,    -7,   -44,   114,  -501],
        [   32,    33,    35,    24,    47,    30,    -3,    27,   126, 795],
        [   25,    10,    15,     9,     2,     1,   -16,    93,    67, 597],
        [    3,     9,     2,     1,    15,     9,    32,    44,    96, 876],
@@ -22,10 +23,17 @@ terrain = np.array([[   25,    10,    21,    21,    15,     9,    -7,   -44,   1
        [   12,    42,    15,    42,    35,    51,     9,   -38,    27, -1434],
        [   25,    10,     2,     1,    40,     2,     2,   243,   319, 2799],
        [    3,    18,     7,    16,     6,    30,   -16,   -32,    54,  -516],
-       [   21,    21,    32,    33,    15,    42,    57,    74,   303,4266],
+       [   21,    21,    32,    33,    15,    42,    57,    74,   303, 4266],
        [   35,    51,    32,    33,    47,    30,   -39,  -102,   279, -4614],
        [   25,    10,    35,    24,    21,    21,    45,   -44,   166, 851]])
-    
+       
+
+points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
+
+def demo(points):
+    t = terrain(points)
+    construct_G(t)
+     
 def construct_G(terrain):
 
     spList = []
@@ -51,12 +59,13 @@ def construct_G(terrain):
     spList = connect_vertices(spList)
 
     # Plot Steiner edges   
-    fig = plt.figure()       
-    ax = fig.gca(projection='3d') 
-    for sp in spList:   
-        for edge in sp.edge:
-            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
-    plt.show(block=False)
+#    fig = plt.figure()       
+#    ax = fig.gca(projection='3d') 
+#    for sp in spList:   
+#        for edge in sp.edge:
+#            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
+#    plt.show(block=False)
+    return spList
 
 def connect_vertices(spList):
     m = spList[0].x.shape[0]/3-1
@@ -107,6 +116,9 @@ class steiner_points:
     y = np.array([0])
     z = np.array([0])
     edge = []
+    costs = []
+    parent = []
+    localheap = []
 
 def add_Steiners(tri, sp, m=10):
     u = np.array([tri[0],tri[1]])
@@ -151,4 +163,4 @@ def add_Steiners(tri, sp, m=10):
 
 
 if __name__ == '__main__':
-    construct_G(terrain)
+    demo(points)
