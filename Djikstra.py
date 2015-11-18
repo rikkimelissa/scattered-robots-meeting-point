@@ -12,19 +12,28 @@ def findMeetingPoint(points, robots):
     t = terrain(points)
     spList = construct_G(t)
     s = len(robots)
+    Q = [[],[],[]]
     for sn, sp in enumerate(spList):
-        sp.costs = np.empty([range(s),range(sp.x)])
-        sp.parents = np.empty([range(s),range(sp.x)]) 
-        for v in range(sp.x):
+        sp.costs = np.empty([sp.x.shape[0],s])
+        sp.parent = np.empty([sp.x.shape[0],s])
+        sp.localheap = []
+        for i in range(sp.x.shape[0]):
+            sp.localheap.append([])
+        for v in range(sp.x.shape[0]):
             for i in range(s):
-                sp.costs[i,v] = float("inf")
-                sp.parent[i,v] = float("nan")
-                sp.localheap.append(i)
-        top =  np.unravel_index(sp.costs.argmin(),sp.costs.shape)[0]
-        minCostInd = sp.localheap.pop(top)
-        Q[0].append(sn)
-        Q[1].append(v)
-        Q[2].append(sp.costs.min())
+                sp.costs[v,i] = float("inf")
+                sp.parent[v,i] = float("nan")
+                sp.localheap[v].append(i)
+            #top = sp.costs[v].argmin()
+            minCostInd = sp.costs[v].argmin() #sp.localheap[v]
+            Q[0].append(sn)
+            Q[1].append(v)
+            Q[2].append(sp.costs[v,minCostInd])
+    for i in range(s):
+        v = robots[i]
+        sp = spList.robots[i]
+        sp.costs[0,i] = 0
+        
     
     
         
