@@ -12,6 +12,7 @@ def findMeetingPoint(points, robots):
     t = terrain(points)
     spList = construct_G(t)
     s = len(robots)
+    vn = sp.x.shape[0]
     Q = [[],[],[]]
     for sn, sp in enumerate(spList):
         sp.costs = np.empty([sp.x.shape[0],s])
@@ -29,10 +30,15 @@ def findMeetingPoint(points, robots):
             Q[0].append(sn)
             Q[1].append(v)
             Q[2].append(sp.costs[v,minCostInd])
-    for i in range(s):
-        v = robots[i]
-        sp = spList.robots[i]
+    for i,r in enumerate(robots):
+        sp = spList[r]
         sp.costs[0,i] = 0
+        minCostInd = i
+        sp.localheap[v] = sp.costs[v].argsort()
+        print vn,r
+        Q[2][vn*r] = 0
+#        indices = [i for i, x in enumerate(Q[2]) if x == 0]
+
         
     
     
