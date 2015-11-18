@@ -34,10 +34,23 @@ def findMeetingPoint(points, robots):
         sp = spList[r]
         sp.costs[0,i] = 0
         minCostInd = i
-        sp.localheap[v] = sp.costs[v].argsort()
+        sp.localheap[0] = sp.costs[0].argsort()
         print vn,r
         Q[2][vn*r] = 0
 #        indices = [i for i, x in enumerate(Q[2]) if x == 0]
+    while True:
+        indices = sorted(range(len(Q[2])), key=Q[2].__getitem__)
+        Q[0] = [y for (y,x) in sorted(zip(Q[0],Q[2]), key=lambda pair: pair[1])]
+        Q[1] = [y for (y,x) in sorted(zip(Q[1],Q[2]), key=lambda pair: pair[1])]
+        Q[2] = [y for (y,x) in sorted(zip(Q[2],Q[2]), key=lambda pair: pair[1])]
+        v = [Q[0].pop(0),Q[1].pop(0),Q[2].pop(0)]
+        minCostInd = spList[v[0]].localheap[v[1]][0]
+        costV = spList[v[0]].costs[v[1]][minCostInd]
+        spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
+        if (spList[v[0]].localheap[v[1]].size == 0):
+            return v
+             
+
 
         
     
