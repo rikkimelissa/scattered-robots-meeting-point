@@ -13,7 +13,7 @@ def findMeetingPoint(points, robots):
     t = terrain(points)
     spList = construct_G(t)
     s = len(robots)
-    vn = sp.x.shape[0]
+    vn = spList[0].x.shape[0]
     Q = [[],[],[]]
     for sn, sp in enumerate(spList):
         sp.costs = np.empty([sp.x.shape[0],s])
@@ -36,7 +36,6 @@ def findMeetingPoint(points, robots):
         sp.costs[0,i] = 0
         minCostInd = i
         sp.localheap[0] = sp.costs[0].argsort()
-        print vn,r
         Q[2][vn*r] = 0
 #        indices = [i for i, x in enumerate(Q[2]) if x == 0]
     while True:
@@ -48,12 +47,13 @@ def findMeetingPoint(points, robots):
         minCostInd = spList[v[0]].localheap[v[1]][0]
         costV = spList[v[0]].costs[v[1]][minCostInd]
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
+        print v, minCostInd, costV, spList[v[0]].localheap[v[1]]
         if (spList[v[0]].localheap[v[1]].size == 0):
             print v
             break
         adjList = [[],[]]
         for i,sn in enumerate(spList):
-            vRet = index_2d(sn,a)
+            vRet = index_2d(sn,[v[0],v[1]])
             if len(vRet) > 0:
                 adjList[0].append(vRet)
                 adjList[1].append([i]*len(vRet))
@@ -78,8 +78,10 @@ def index_2d(myList, v):
     for i, x in enumerate(myList.edge):
 #        print i,x
         if v[0] in x and v[1] in x:
-            ind = np.where(myList.x == myList.edge[i][(x.index(v[0])+3)%6])[0][0]
-            indRet.append(ind)
+            if (x.index(v[0]) == 0 and x.index(v[1]) == 1) or (x.index(v[0]) == 3 and x.index(v[1]) == 4):
+#                print myList.x, myList.edge[i],v[0],v[1]
+                ind = np.where(myList.x == myList.edge[i][(x.index(v[0])+3)%6])[0][0]
+                indRet.append(ind)
     return indRet  
 
 def weightedCost(v,u):
