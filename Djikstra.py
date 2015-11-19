@@ -7,12 +7,15 @@ from math import sqrt
 
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
 robots = [1,6,17,20]
+points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2)])
+robotsS = [0,1]
+robotV = [1,0]
 
 def findMeetingPoint(points, robots):
     plt.close('all')
     t = terrain(points)
     spList = construct_G(t)
-    s = len(robots)
+    s = len(robotsS)
     vn = spList[0].x.shape[0]
     Q = [[],[],[]]
     for sn, sp in enumerate(spList):
@@ -31,12 +34,12 @@ def findMeetingPoint(points, robots):
             Q[0].append(sn)
             Q[1].append(v)
             Q[2].append(sp.costs[v,minCostInd])
-    for i,r in enumerate(robots):
+    for i,r in enumerate(robotsS):
         sp = spList[r]
-        sp.costs[0,i] = 0
+        sp.costs[robotV[i],i] = 0
         minCostInd = i
-        sp.localheap[0] = sp.costs[0].argsort()
-        Q[2][vn*r] = 0
+        sp.localheap[robotV[i]] = sp.costs[robotV[i]].argsort()
+        Q[2][vn*r + robotV[i]] = 0
 #        indices = [i for i, x in enumerate(Q[2]) if x == 0]
     while True:
         indices = sorted(range(len(Q[2])), key=Q[2].__getitem__)
@@ -76,24 +79,17 @@ find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e]
 def index_2d(myList, v):
     indRet = []
     for i, x in enumerate(myList.edge):
-#        print i,x
         if v[0] in x and v[1] in x:
             if (x.index(v[0]) == 0 and x.index(v[1]) == 1) or (x.index(v[0]) == 3 and x.index(v[1]) == 4):
-#                print myList.x, myList.edge[i],v[0],v[1]
-                ind = np.where(myList.x == myList.edge[i][(x.index(v[0])+3)%6])[0][0]
+                indX = np.where(myList.x == myList.edge[i][(x.index(v[0])+3)%6])
+                indY = np.where(myList.y == myList.edge[i][(x.index(v[0])+4)%6])
+                ind = np.intersect1d(indX[0],indY[0])
                 indRet.append(ind)
     return indRet  
 
 def weightedCost(v,u):
     return sqrt((v[0] - u[0])**2 + (v[1] - u[1])**2 + (v[2] - u[2])**2)
     
-
-    
-        
-
-
-
-
 
 if __name__ == '__main__':
     findMeetingPoint(points, robots)
