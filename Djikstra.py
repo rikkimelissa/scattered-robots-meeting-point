@@ -50,10 +50,12 @@ def findMeetingPoint(points, robots):
         minCostInd = spList[v[0]].localheap[v[1]][0]
         costV = spList[v[0]].costs[v[1]][minCostInd]
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
-        print v, minCostInd, costV, spList[v[0]].localheap[v[1]]
+        print v, minCostInd, costV, spList[v[0]].localheap[v[1]], len(Q[0])
+        print spList[v[0]].x[v[1]], spList[v[0]].y[v[1]]
         if (spList[v[0]].localheap[v[1]].size == 0):
-            print v
+            print "Reached goal!", v
             break
+        zip(Q[0],Q[1],Q[2])
         adjList = [[],[]]
         for i,sn in enumerate(spList):
             vRet = index_2d(sn,[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]]])
@@ -68,10 +70,15 @@ def findMeetingPoint(points, robots):
                 spList[sn].parent[vn][minCostInd] = v[0]*1000 + v[1]
                 spList[sn].localheap[vn] = spList[sn].costs[vn].argsort()
                 if minCostInd == spList[sn].localheap[vn][0]:
+                    print "adjusted", spList[sn].x[vn], spList[sn].y[vn]
                     Qs = [i for i, x in enumerate(Q[0]) if x == sn]
                     Qv = [i for i, x in enumerate(Q[1]) if x == vn]
                     index = set(Qs).intersection(Qv).pop()
                     Q[2][index] = spList[sn].costs[vn][minCostInd]
+        print len(Q[0])
+        zip(Q[0],Q[1],Q[2])
+
+                    
 
 
 find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e] for e in elem]
@@ -83,7 +90,7 @@ def index_2d(myList, v):
             if (x.index(v[0]) == 0 and x.index(v[1]) == 1) or (x.index(v[0]) == 3 and x.index(v[1]) == 4):
                 indX = np.where(myList.x == myList.edge[i][(x.index(v[0])+3)%6])
                 indY = np.where(myList.y == myList.edge[i][(x.index(v[0])+4)%6])
-                ind = np.intersect1d(indX[0],indY[0])
+                ind = np.intersect1d(indX[0],indY[0])[0]
                 indRet.append(ind)
     return indRet  
 
