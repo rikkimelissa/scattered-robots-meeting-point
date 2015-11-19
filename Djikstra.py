@@ -49,6 +49,7 @@ def findMeetingPoint(points, robots):
         costV = spList[v[0]].costs[v[1]][minCostInd]
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
         if (spList[v[0]].localheap[v[1]].size == 0):
+            print v
             break
         adjList = [[],[]]
         for i,sn in enumerate(spList):
@@ -59,8 +60,15 @@ def findMeetingPoint(points, robots):
         adjList = [[item for sublist in adjList[0] for item in sublist],[item for sublist in adjList[1] for item in sublist]]
         for vn,sn in zip(adjList[0],adjList[1]):
             costU = spList[sn].costs[vn][minCostInd]
-            if costU > costV + weightedCost([spList[sn].x[vn],spList[sn].y[vn],spList[sn].z[vn]],[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]],spList[v[0]].z[v[1]]]):
-        
+            if costU > (costV + weightedCost([spList[sn].x[vn],spList[sn].y[vn],spList[sn].z[vn]],[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]],spList[v[0]].z[v[1]]])):
+                spList[sn].costs[vn][minCostInd] = (costV + weightedCost([spList[sn].x[vn],spList[sn].y[vn],spList[sn].z[vn]],[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]],spList[v[0]].z[v[1]]]))
+                spList[sn].parent[vn][minCostInd] = v[0]*1000 + v[1]
+                spList[sn].localheap[vn] = spList[sn].costs[vn].argsort()
+                if minCostInd == spList[sn].localheap[vn][0]:
+                    Qs = [i for i, x in enumerate(Q[0]) if x == sn]
+                    Qv = [i for i, x in enumerate(Q[0]) if x == sn]
+                    index = set(a).intersection(b).pop()
+                    Q[2][index] = spList[sn].costs[vn][minCostInd]
 
 
 find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e] for e in elem]
@@ -77,6 +85,7 @@ def index_2d(myList, v):
 def weightedCost(v,u):
     return sqrt((v[0] - u[0])**2 + (v[1] - u[1])**2 + (v[2] - u[2])**2)
     
+
     
         
 
