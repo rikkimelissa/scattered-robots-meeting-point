@@ -136,24 +136,24 @@ def add_Steiners(tri, sp, m=10):
     
     for i in range(m):
         xd,yd = ((v-u)/float(m+1))
-        x,y = u + (i+1)*np.array([xd,yd])
-        z = float(d - norm[0]*x - norm[1]*y)/norm[2]
+        x,y = np.round(u + (i+1)*np.array([xd,yd]),4)
+        z = np.round(float(d - norm[0]*x - norm[1]*y)/norm[2],4)
         sp.x = np.append(sp.x,x)
         sp.y = np.append(sp.y,y)
         sp.z = np.append(sp.z,z)
         
     for i in range(m):
         xd,yd = ((w-v)/float(m+1))
-        x,y = v + (i+1)*np.array([xd,yd])
-        z = float(d - norm[0]*x - norm[1]*y)/norm[2]
+        x,y = np.round(v + (i+1)*np.array([xd,yd]),4)
+        z = np.round(float(d - norm[0]*x - norm[1]*y)/norm[2],4)
         sp.x = np.append(sp.x,x)
         sp.y = np.append(sp.y,y)
         sp.z = np.append(sp.z,z)
         
     for i in range(m):
         xd,yd = ((u-w)/float(m+1))
-        x,y = w + (i+1)*np.array([xd,yd])
-        z = float(d - norm[0]*x - norm[1]*y)/norm[2]
+        x,y = np.round(w + (i+1)*np.array([xd,yd]),4)
+        z = np.round(float(d - norm[0]*x - norm[1]*y)/norm[2],4)
         sp.x = np.append(sp.x,x)
         sp.y = np.append(sp.y,y)
         sp.z = np.append(sp.z,z)
