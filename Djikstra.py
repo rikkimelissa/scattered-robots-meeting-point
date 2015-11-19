@@ -53,7 +53,7 @@ def findMeetingPoint(points, robots):
             break
         adjList = [[],[]]
         for i,sn in enumerate(spList):
-            vRet = index_2d(sn,[v[0],v[1]])
+            vRet = index_2d(sn,[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]]])
             if len(vRet) > 0:
                 adjList[0].append(vRet)
                 adjList[1].append([i]*len(vRet))
@@ -66,8 +66,8 @@ def findMeetingPoint(points, robots):
                 spList[sn].localheap[vn] = spList[sn].costs[vn].argsort()
                 if minCostInd == spList[sn].localheap[vn][0]:
                     Qs = [i for i, x in enumerate(Q[0]) if x == sn]
-                    Qv = [i for i, x in enumerate(Q[0]) if x == sn]
-                    index = set(a).intersection(b).pop()
+                    Qv = [i for i, x in enumerate(Q[1]) if x == vn]
+                    index = set(Qs).intersection(Qv).pop()
                     Q[2][index] = spList[sn].costs[vn][minCostInd]
 
 
