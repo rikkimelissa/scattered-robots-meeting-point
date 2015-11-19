@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from G_construction import construct_G
 from terrain_generator import terrain
+from math import sqrt
 
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
 robots = [1,6,17,20]
@@ -48,30 +49,33 @@ def findMeetingPoint(points, robots):
         costV = spList[v[0]].costs[v[1]][minCostInd]
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
         if (spList[v[0]].localheap[v[1]].size == 0):
-            return v
-        adjList = [[],[],[]]
+            break
+        adjList = [[],[]]
         for i,sn in enumerate(spList):
-            sRet, pRet = index_2d(sn.edge,a)
-            if len(sRet) > 0:
-                adjList[0].append(sRet)
-                adjList[1].append(pRet)
-                adjList[2].append([i]*len(sRet))
-        adjList = [[item for sublist in adjList[0] for item in sublist],[item for sublist in adjList[1] for item in sublist],[item for sublist in adjList[2] for item in sublist]]
-        for en,sn,pn in zip(adjList[0],adjList[1],adjList[2]):
+            vRet = index_2d(sn,a)
+            if len(vRet) > 0:
+                adjList[0].append(vRet)
+                adjList[1].append([i]*len(vRet))
+        adjList = [[item for sublist in adjList[0] for item in sublist],[item for sublist in adjList[1] for item in sublist]]
+        for vn,sn in zip(adjList[0],adjList[1]):
+            costU = spList[sn].costs[vn][minCostInd]
+            if costU > costV + weightedCost([spList[sn].x[vn],spList[sn].y[vn],spList[sn].z[vn]],[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]],spList[v[0]].z[v[1]]]):
         
 
 
 find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e] for e in elem]
 
 def index_2d(myList, v):
-    iRet = []
-    vRet = []
-    for i, x in enumerate(myList):
+    indRet = []
+    for i, x in enumerate(myList.edge):
 #        print i,x
         if v[0] in x and v[1] in x:
-            iRet.append(i)
-            vRet.append(x.index(v[0]))
-    return (iRet, vRet)    
+            ind = np.where(myList.x == myList.edge[i][(x.index(v[0])+3)%6])[0][0]
+            indRet.append(ind)
+    return indRet  
+
+def weightedCost(v,u):
+    return sqrt((v[0] - u[0])**2 + (v[1] - u[1])**2 + (v[2] - u[2])**2)
     
     
         
