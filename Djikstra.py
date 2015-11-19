@@ -49,10 +49,29 @@ def findMeetingPoint(points, robots):
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
         if (spList[v[0]].localheap[v[1]].size == 0):
             return v
-             
-
-
+        adjList = [[],[],[]]
+        for i,sn in enumerate(spList):
+            sRet, pRet = index_2d(sn.edge,a)
+            if len(sRet) > 0:
+                adjList[0].append(sRet)
+                adjList[1].append(pRet)
+                adjList[2].append([i]*len(sRet))
+        adjList = [[item for sublist in adjList[0] for item in sublist],[item for sublist in adjList[1] for item in sublist],[item for sublist in adjList[2] for item in sublist]]
+        for en,sn,pn in zip(adjList[0],adjList[1],adjList[2]):
         
+
+
+find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e] for e in elem]
+
+def index_2d(myList, v):
+    iRet = []
+    vRet = []
+    for i, x in enumerate(myList):
+#        print i,x
+        if v[0] in x and v[1] in x:
+            iRet.append(i)
+            vRet.append(x.index(v[0]))
+    return (iRet, vRet)    
     
     
         
