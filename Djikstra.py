@@ -12,34 +12,7 @@ robotsS = [0,1]
 robotV = [1,0]
 
 def findMeetingPoint(points, robots):
-    plt.close('all')
-    t = terrain(points)
-    spList = construct_G(t)
-    s = len(robotsS)
-    vn = spList[0].x.shape[0]
-    Q = [[],[],[]]
-    for sn, sp in enumerate(spList):
-        sp.costs = np.empty([sp.x.shape[0],s])
-        sp.parent = np.empty([sp.x.shape[0],s])
-        sp.localheap = []
-        for i in range(sp.x.shape[0]):
-            sp.localheap.append([])
-        for v in range(sp.x.shape[0]):
-            for i in range(s):
-                sp.costs[v,i] = float("inf")
-                sp.parent[v,i] = float("nan")
-                sp.localheap[v].append(i)
-            #top = sp.costs[v].argmin()
-            minCostInd = sp.costs[v].argmin() #sp.localheap[v]
-            Q[0].append(sn)
-            Q[1].append(v)
-            Q[2].append(sp.costs[v,minCostInd])
-    for i,r in enumerate(robotsS):
-        sp = spList[r]
-        sp.costs[robotV[i],i] = 0
-        minCostInd = i
-        sp.localheap[robotV[i]] = sp.costs[robotV[i]].argsort()
-        Q[2][vn*r + robotV[i]] = 0
+    spList, Q = initialize(points, robotsS, 
 #        indices = [i for i, x in enumerate(Q[2]) if x == 0]
     while True:
         indices = sorted(range(len(Q[2])), key=Q[2].__getitem__)
@@ -83,6 +56,37 @@ def findMeetingPoint(points, robots):
 
 find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e] for e in elem]
 
+def initialize(points, robotsS, robotV):
+    plt.close('all')
+    t = terrain(points)
+    spList = construct_G(t)
+    s = len(robotsS)
+    vn = spList[0].x.shape[0]
+    Q = [[],[],[]]
+    for sn, sp in enumerate(spList):
+        sp.costs = np.empty([sp.x.shape[0],s])
+        sp.parent = np.empty([sp.x.shape[0],s])
+        sp.localheap = []
+        for i in range(sp.x.shape[0]):
+            sp.localheap.append([])
+        for v in range(sp.x.shape[0]):
+            for i in range(s):
+                sp.costs[v,i] = float("inf")
+                sp.parent[v,i] = float("nan")
+                sp.localheap[v].append(i)
+            #top = sp.costs[v].argmin()
+            minCostInd = sp.costs[v].argmin() #sp.localheap[v]
+            Q[0].append(sn)
+            Q[1].append(v)
+            Q[2].append(sp.costs[v,minCostInd])
+    for i,r in enumerate(robotsS):
+        sp = spList[r]
+        sp.costs[robotV[i],i] = 0
+        minCostInd = i
+        sp.localheap[robotV[i]] = sp.costs[robotV[i]].argsort()
+        Q[2][vn*r + robotV[i]] = 0
+    return spList, Q
+        
 def index_2d(myList, v):
     indRet = []
     for i, x in enumerate(myList.edge):

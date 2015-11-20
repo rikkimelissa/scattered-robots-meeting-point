@@ -1,4 +1,4 @@
-    
+import copy
     
 def test(spList, Q):        
     indices = sorted(range(len(Q[2])), key=Q[2].__getitem__)
@@ -32,22 +32,31 @@ def test(spList, Q):
 #            for t in range(len(spList[sn].localheap[vn])):
 #                spList[sn].localheap[vn][t] = spList[sn].costs[vn][spList[sn].localheap[vn][t]]
             order = spList[sn].costs[vn].argsort()
+            print order
+            print sn, vn
+            print spList[sn].localheap[vn]
             t = 0
+            orig = copy.copy(spList[sn].localheap[vn])
             for o in order:
-                if o in spList[sn].localheap[vn]:
+                if o in orig:
                     spList[sn].localheap[vn][t] = o 
                     t += 1
+            print spList[sn].localheap[vn]
 #            spList[sn].localheap[vn] = spList[sn].costs[vn].argsort()
             if minCostInd == spList[sn].localheap[vn][0]:
 #                    print "adjusted", spList[sn].x[vn], spList[sn].y[vn]
                 Qs = [i for i, x in enumerate(Q[0]) if x == sn]
                 Qv = [i for i, x in enumerate(Q[1]) if x == vn]
                 print sn, vn
-                index = set(Qs).intersection(Qv).pop()
-                Q[2][index] = spList[sn].costs[vn][minCostInd]
+                if len(set(Qs).intersection(Qv)) > 0:
+                    index = set(Qs).intersection(Qv).pop()
+                    Q[2][index] = spList[sn].costs[vn][minCostInd]
 #        print spList[0].costs, spList[1].costs
 #        zip(Q[0],Q[1],Q[2])
     print len(Q[0])
     return spList, Q
+    
+    for i in range(len(Q[0])):
+        ss, Qs = test(ss,Qs)
 
                 

@@ -107,12 +107,7 @@ def connect_vertices(spList):
         for xo, yo, zo in zip(sp.x[2*m+3:], sp.y[2*m+3:], sp.z[2*m+3:]):
             for xd, yd, zd in zip(sp.x[m+3:2*m+3],sp.y[m+3:2*m+3],sp.z[m+3:2*m+3]):
                 edge = [xo, yo, zo, xd, yd, zd]
-                spList[i].edge.append(edge)  
-        plt.figure()        
-        for e in spList[i].edge:
-            plt.plot([e[0],e[3]],[e[1],e[4]])
-            plt.show(block=False)
-            
+                spList[i].edge.append(edge)              
     return spList
         
 
