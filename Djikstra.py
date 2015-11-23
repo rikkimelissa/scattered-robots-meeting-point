@@ -8,12 +8,12 @@ import copy
 
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
 robots = [1,6,17,20]
-points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2)])
-robotsS = [0,1]
-robotV = [1,0]
+#points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2)])
+#robotsS = [0,1]
+robotV = [1,0,2,0]
 
-def findMeetingPoint(points, robots):
-    spList, Q = initialize(points, robotsS, robotV) 
+def findMeetingPoint(points, robots, robotV):
+    spList, Q = initialize(points, robots, robotV) 
 #        indices = [i for i, x in enumerate(Q[2]) if x == 0]
     while True:      
         Q[0] = [y for (y,x) in sorted(zip(Q[0],Q[2]), key=lambda pair: pair[1])]
@@ -25,6 +25,8 @@ def findMeetingPoint(points, robots):
         costV = spList[v[0]].costs[v[1]][minCostInd]
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
         if (spList[v[0]].localheap[v[1]].size == 0):
+            for r, s in zip(robots,robotV):
+                print spList[r].x[s], spList[r].y[s]
             print "Reached goal!", v
             break
         zip(Q[0],Q[1],Q[2],Q[3])
@@ -114,4 +116,4 @@ def weightedCost(v,u):
     
 
 if __name__ == '__main__':
-    initialize(points, robotsS, robotV)
+    findMeetingPoint(points, robots, robotV)
