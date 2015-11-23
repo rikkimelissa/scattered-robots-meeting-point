@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from G_construction import construct_G
 from terrain_generator import terrain
 from math import sqrt
+import copy
 
 points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
 robots = [1,6,17,20]
@@ -12,23 +13,21 @@ robotsS = [0,1]
 robotV = [1,0]
 
 def findMeetingPoint(points, robots):
-    spList, Q = initialize(points, robotsS, 
+    spList, Q = initialize(points, robotsS, robotV) 
 #        indices = [i for i, x in enumerate(Q[2]) if x == 0]
-    while True:
-        indices = sorted(range(len(Q[2])), key=Q[2].__getitem__)
+    while True:      
         Q[0] = [y for (y,x) in sorted(zip(Q[0],Q[2]), key=lambda pair: pair[1])]
         Q[1] = [y for (y,x) in sorted(zip(Q[1],Q[2]), key=lambda pair: pair[1])]
+        Q[3] = [y for (y,x) in sorted(zip(Q[3],Q[2]), key=lambda pair: pair[1])]
         Q[2] = [y for (y,x) in sorted(zip(Q[2],Q[2]), key=lambda pair: pair[1])]
-        v = [Q[0].pop(0),Q[1].pop(0),Q[2].pop(0)]
-        minCostInd = spList[v[0]].localheap[v[1]][0]
+        v = [Q[0].pop(0),Q[1].pop(0),Q[2].pop(0),Q[3].pop(0)]
+        minCostInd = v[3]
         costV = spList[v[0]].costs[v[1]][minCostInd]
         spList[v[0]].localheap[v[1]] = np.delete(spList[v[0]].localheap[v[1]],0)
-        print v, minCostInd, costV, spList[v[0]].localheap[v[1]], len(Q[0])
-        print spList[v[0]].x[v[1]], spList[v[0]].y[v[1]]
         if (spList[v[0]].localheap[v[1]].size == 0):
             print "Reached goal!", v
             break
-        zip(Q[0],Q[1],Q[2])
+        zip(Q[0],Q[1],Q[2],Q[3])
         adjList = [[],[]]
         for i,sn in enumerate(spList):
             vRet = index_2d(sn,[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]]])
@@ -41,17 +40,28 @@ def findMeetingPoint(points, robots):
             if costU > (costV + weightedCost([spList[sn].x[vn],spList[sn].y[vn],spList[sn].z[vn]],[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]],spList[v[0]].z[v[1]]])):
                 spList[sn].costs[vn][minCostInd] = (costV + weightedCost([spList[sn].x[vn],spList[sn].y[vn],spList[sn].z[vn]],[spList[v[0]].x[v[1]],spList[v[0]].y[v[1]],spList[v[0]].z[v[1]]]))
                 spList[sn].parent[vn][minCostInd] = v[0]*1000 + v[1]
-                spList[sn].localheap[vn] = spList[sn].costs[vn].argsort()
+                order = spList[sn].costs[vn].argsort()
+                t = 0
+                orig = copy.copy(spList[sn].localheap[vn])
+                for o in order:
+                    if o in orig:
+                        spList[sn].localheap[vn][t] = o 
+                        t += 1
                 if minCostInd == spList[sn].localheap[vn][0]:
-                    print "adjusted", spList[sn].x[vn], spList[sn].y[vn]
                     Qs = [i for i, x in enumerate(Q[0]) if x == sn]
                     Qv = [i for i, x in enumerate(Q[1]) if x == vn]
-                    index = set(Qs).intersection(Qv).pop()
-                    Q[2][index] = spList[sn].costs[vn][minCostInd]
-        print len(Q[0])
-        zip(Q[0],Q[1],Q[2])
-
-                    
+                    Qr = [i for i, x in enumerate(Q[3]) if x == minCostInd]
+                    if len(set(Qs).intersection(Qv,Qr)) > 0:
+                        index = set(Qs).intersection(Qv,Qr).pop()
+                        Q[2][index] = spList[sn].costs[vn][minCostInd] 
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot(spList[1].x, spList[1].y, spList[1].costs[:,1],'b.')
+    ax.plot(spList[0].x, spList[0].y, spList[0].costs[:,1],'r.')
+    ax.plot(spList[1].x, spList[1].y, spList[1].costs[:,0],'g.')
+    ax.plot(spList[0].x, spList[0].y, spList[0].costs[:,0],'c.')
+    plt.show(block=False)    
+    return spList, Q, v            
 
 
 find = lambda searchList, elem: [[i for i, x in enumerate(searchList) if x == e] for e in elem]
@@ -62,7 +72,7 @@ def initialize(points, robotsS, robotV):
     spList = construct_G(t)
     s = len(robotsS)
     vn = spList[0].x.shape[0]
-    Q = [[],[],[]]
+    Q = [[],[],[],[]]
     for sn, sp in enumerate(spList):
         sp.costs = np.empty([sp.x.shape[0],s])
         sp.parent = np.empty([sp.x.shape[0],s])
@@ -75,16 +85,17 @@ def initialize(points, robotsS, robotV):
                 sp.parent[v,i] = float("nan")
                 sp.localheap[v].append(i)
             #top = sp.costs[v].argmin()
-            minCostInd = sp.costs[v].argmin() #sp.localheap[v]
-            Q[0].append(sn)
-            Q[1].append(v)
-            Q[2].append(sp.costs[v,minCostInd])
+#                minCostInd = sp.costs[v].argmin() #sp.localheap[v]
+                Q[0].append(sn)
+                Q[1].append(v)
+                Q[2].append(float("inf"))
+                Q[3].append(i)
     for i,r in enumerate(robotsS):
         sp = spList[r]
         sp.costs[robotV[i],i] = 0
         minCostInd = i
         sp.localheap[robotV[i]] = sp.costs[robotV[i]].argsort()
-        Q[2][vn*r + robotV[i]] = 0
+        Q[2][(vn*r + robotV[i])*s+i] = 0
     return spList, Q
         
 def index_2d(myList, v):
@@ -103,4 +114,4 @@ def weightedCost(v,u):
     
 
 if __name__ == '__main__':
-    findMeetingPoint(points, robots)
+    initialize(points, robotsS, robotV)
