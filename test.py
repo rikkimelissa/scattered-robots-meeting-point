@@ -6,8 +6,8 @@ def test(spList, Q):
     indices = sorted(range(len(Q[2])), key=Q[2].__getitem__)
     Q[0] = [y for (y,x) in sorted(zip(Q[0],Q[2]), key=lambda pair: pair[1])]
     Q[1] = [y for (y,x) in sorted(zip(Q[1],Q[2]), key=lambda pair: pair[1])]
-    Q[2] = [y for (y,x) in sorted(zip(Q[2],Q[2]), key=lambda pair: pair[1])]
     Q[3] = [y for (y,x) in sorted(zip(Q[3],Q[2]), key=lambda pair: pair[1])]
+    Q[2] = [y for (y,x) in sorted(zip(Q[2],Q[2]), key=lambda pair: pair[1])]
     v = [Q[0].pop(0),Q[1].pop(0),Q[2].pop(0),Q[3].pop(0)]
     minCostInd = v[3] # spList[v[0]].localheap[v[1]][0]
     costV = spList[v[0]].costs[v[1]][minCostInd]
@@ -62,5 +62,30 @@ def test(spList, Q):
     
 #    for i in range(len(Q[0])):
 #        ss, Qs = test(ss,Qs)
+
+H = copy.copy(Q)
+for h in H[2]:
+    if h > 5000:
+        h = 50   
+pylab.plot(range(len(Q[0])),H[0],'--b')
+pylab.plot(range(len(Q[0])),H[1],'.r')
+pylab.plot(range(len(Q[0])),H[2],'-g')
+pylab.plot(range(len(Q[0])),H[3],'-.m')
+
+pylab.plot(range(len(spList[1].costs[:,1])),spList[1].costs[:,1],'.r')
+
+pylab.show(block=False)
+
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+ax.plot(spList[1].x, spList[1].y, spList[1].costs[:,1],'b.')
+ax.plot(spList[0].x, spList[0].y, spList[0].costs[:,1],'r.')
+ax.plot(spList[1].x, spList[1].y, spList[1].costs[:,0],'g.')
+ax.plot(spList[0].x, spList[0].y, spList[0].costs[:,0],'c.')
+plt.show(block=False)
+
+
+
 
                 

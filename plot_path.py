@@ -30,7 +30,7 @@ for robot,parent in enumerate(spList[v[0]].parent[v[1]]):
         xPlot[robot].append(x)
         yPlot[robot].append(y)
         zPlot[robot].append(z)
-fig = plt.figure(3)
+fig = plt.figure(7)
 ax = fig.gca(projection='3d')
 ax.plot(xPlot[0], yPlot[0], zPlot[0],'r-')
 ax.plot(xPlot[1], yPlot[1], zPlot[1],'b-')

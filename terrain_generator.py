@@ -39,7 +39,7 @@ def terrain(p):
     # Plot the terrain
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2)
+    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2, alpha=0.5)
     plt.show(block=False)
     return terrainList
 
