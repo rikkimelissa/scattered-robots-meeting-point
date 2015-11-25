@@ -18,7 +18,7 @@ def terrain(p):
     tri, edgeList = DelaunayTri(p)
     plt.close('all')
     for s in tri:
-        plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]])
+        plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]],)
     plt.axis([0, 50, 0, 60])
     plt.show(block=False) 
     
