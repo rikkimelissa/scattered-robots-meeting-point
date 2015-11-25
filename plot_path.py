@@ -37,6 +37,14 @@ ax.plot(xPlot[1], yPlot[1], zPlot[1],'b-')
 ax.plot(xPlot[2], yPlot[2], zPlot[2],'m-')
 ax.plot(xPlot[3], yPlot[3], zPlot[3],'g-')
 plt.show(block=False) 
+
+fig = plt.figure(1)
+ax = fig.gca()
+ax.plot(xPlot[0], yPlot[0],'r-')
+ax.plot(xPlot[1], yPlot[1],'b-')
+ax.plot(xPlot[2], yPlot[2],'m-')
+ax.plot(xPlot[3], yPlot[3],'g-')
+plt.show(block=False) 
         
         
         
