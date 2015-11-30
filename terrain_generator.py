@@ -41,7 +41,7 @@ def terrain(p):
     fig = plt.figure(1)
     ax = fig.gca(projection='3d')
     ax.plot_trisurf(px, py, pz, cmap=cm.bone, linewidth=0.2, alpha=0.5)
-    plt.title('Python generated triangulation')
+    plt.title('Robot path on terrain map')
     plt.show(block=False)
     fig = plt.figure(2)
     triPlot= triang.Triangulation(px,py)
