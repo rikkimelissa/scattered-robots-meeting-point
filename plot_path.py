@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+Input: A list of triangles with Steiner points and edges, a set of robot vertices, a robot meeting point, and a list of associated parents for each Steiner vertex
+Output: Plots of robot paths
+'''
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -7,14 +12,13 @@ from Djikstra import findMeetingPoint
 from math import sqrt
 import copy
 
-#orig = np.array([spList[v[0]].x[v[1]],spList[v[0]].z[v[1]],spList[v[0]].z[v[1]]]    
-
 points = np.array([(4, 8, 1),(3, 18, 2),(6, 35, 3),(12, 42, 2),(15, 9, 0),(15, 42, 1),(18, 25, 5),(32, 33, 0),(35, 24, 2),(35, 51, 1),(47, 30, 1),(2,1,0),(40,2,2),(7,16,3),(25,7,1),(48,21,1)])
 robots = [1,6,17,20]
 robotV = [1,0,2,0]
 
 def plotPath(points, robots, robotV):
     spList, Q, v = findMeetingPoint(points, robots, robotV)
+    # Initialize paths with meeting point
     x = spList[v[0]].x[v[1]]   
     y = spList[v[0]].y[v[1]]   
     z = spList[v[0]].z[v[1]]     
@@ -22,6 +26,7 @@ def plotPath(points, robots, robotV):
     yPlot=[[y],[y],[y],[y]]
     zPlot=[[z],[z],[z],[z]]  
     for robot,parent in enumerate(spList[v[0]].parent[v[1]]):
+        # Trace the previous vertex until you reach the starting point for the robot
         if parent > 0:
             child, x, y, z = findParent(parent,robot,spList)
             xPlot[robot].append(x)
@@ -53,6 +58,7 @@ def plotPath(points, robots, robotV):
     ax.plot(xPlot[0][0], yPlot[0][0], '.',markersize=20, color='black')
     plt.show(block=False) 
 
+# Decode the parent vertex by its representation scheme
 def findParent(number,robot,spList):
     sp = int(number)/1000
     n = number - sp*1000

@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+Input: A list of triangles
+Output: A list of triangles with added vertices and edges
+'''
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -69,6 +74,7 @@ def construct_G(terrain):
     plt.show(block=False)
     return spList
 
+# Add edges between all Steiner points
 def connect_vertices(spList):
     m = spList[0].x.shape[0]/3-1
     for i,sp in enumerate(spList):
@@ -122,7 +128,10 @@ class steiner_points:
     parent = []
     localheap = []
 
+# Add Steiner points
 def add_Steiners(tri, sp, m=10):
+
+    # Calculate the equation of the plane
     u = np.array([tri[0],tri[1]])
     v = np.array([tri[2],tri[3]])
     w = np.array([tri[4],tri[5]])
@@ -136,6 +145,7 @@ def add_Steiners(tri, sp, m=10):
     wz = float(d - norm[0]*w[0] - norm[1]*w[1])/norm[2]
     sp.z = np.append(sp.z,[uz,vz,wz])
     
+    # Place Steiner points for one edge at a time
     for i in range(m):
         xd,yd = ((v-u)/float(m+1))
         x,y = np.round(u + (i+1)*np.array([xd,yd]),4)
