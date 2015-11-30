@@ -38,7 +38,6 @@ def plotPath(points, robots, robotV):
     ax.plot(xPlot[1], yPlot[1], zPlot[1],linewidth=3.0,color='tomato')
     ax.plot(xPlot[2], yPlot[2], zPlot[2],linewidth=3.0,color='lime')
     ax.plot(xPlot[3], yPlot[3], zPlot[3],linewidth=3.0,color='yellow')
-    ax.plot(xPlot[0][0], yPlot[0][0], zPlot[0][0])
     plt.show(block=False) 
 
     fig = plt.figure(2)
@@ -47,11 +46,11 @@ def plotPath(points, robots, robotV):
     ax.plot(xPlot[1], yPlot[1],linewidth=3.0,color='tomato')
     ax.plot(xPlot[2], yPlot[2],linewidth=3.0,color='lime')
     ax.plot(xPlot[3], yPlot[3],linewidth=3.0,color='yellow')
-    ax.plot(xPlot[0][0], yPlot[0][0], '.',markersize=20, color='black')
     ax.plot(xPlot[0][-1], yPlot[0][-1], '.',markersize=20, color='darkorchid')
     ax.plot(xPlot[1][-1], yPlot[1][-1], '.',markersize=20, color='tomato')
     ax.plot(xPlot[2][-1], yPlot[2][-1], '.',markersize=20, color='lime') 
     ax.plot(xPlot[3][-1], yPlot[3][-1], '.',markersize=20, color='yellow')
+    ax.plot(xPlot[0][0], yPlot[0][0], '.',markersize=20, color='black')
     plt.show(block=False) 
 
 def findParent(number,robot,spList):
