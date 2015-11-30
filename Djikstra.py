@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -56,13 +58,6 @@ def findMeetingPoint(points, robots, robotV):
                     if len(set(Qs).intersection(Qv,Qr)) > 0:
                         index = set(Qs).intersection(Qv,Qr).pop()
                         Q[2][index] = spList[sn].costs[vn][minCostInd] 
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot(spList[1].x, spList[1].y, spList[1].costs[:,1],'b.')
-    ax.plot(spList[0].x, spList[0].y, spList[0].costs[:,1],'r.')
-    ax.plot(spList[1].x, spList[1].y, spList[1].costs[:,0],'g.')
-    ax.plot(spList[0].x, spList[0].y, spList[0].costs[:,0],'c.')
-    plt.show(block=False)    
     return spList, Q, v            
 
 
@@ -116,4 +111,4 @@ def weightedCost(v,u):
     
 
 if __name__ == '__main__':
-    findMeetingPoint(points, robots, robotV)
+    spList, Q, v = findMeetingPoint(points, robots, robotV)

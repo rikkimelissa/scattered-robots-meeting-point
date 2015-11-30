@@ -18,10 +18,10 @@ def terrain(p):
     # Calculate the Delaunay triangulation and return the triangles and the edge diagram
     tri, edgeList = DelaunayTri(p)
     plt.close('all')
-    for s in tri:
-        plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]],)
-    plt.axis([0, 50, 0, 60])
-    plt.show(block=False) 
+#    for s in tri:
+#        plt.plot([s[0],s[2],s[4],s[0]],[s[1],s[3],s[5],s[1]],)
+#    plt.axis([0, 50, 0, 60])
+#    plt.show(block=False) 
     
     # Calculate the slope equations for each triangle and return as a list with order: [x1, y1, x2, y2, x3, y3, norm[1], norm[2], norm[3], d]
     terrainList = np.array([[0,0,0,0,0,0,0,0,0,0]])
@@ -38,15 +38,17 @@ def terrain(p):
     #zz = (-norm[0]*xx - norm[1]*yy - d)*1./norm[2]
     
     # Plot the terrain
-    fig = plt.figure()
+    fig = plt.figure(1)
     ax = fig.gca(projection='3d')
-    ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2, alpha=0.5)
+    ax.plot_trisurf(px, py, pz, cmap=cm.bone, linewidth=0.2, alpha=0.5)
+    plt.title('Python generated triangulation')
     plt.show(block=False)
-#    fig = plt.figure(7)
-#    triPlot= triang.Triangulation(px,py)
-#    levels = np.arange(0., 5.5, 0.25)
-#    plt.tricontourf(triPlot, pz, levels=levels, cmap=cm.bone)
-#    plt.show(block=False)
+    fig = plt.figure(2)
+    triPlot= triang.Triangulation(px,py)
+    levels = np.arange(-1., 5.5, 0.2)
+    plt.tricontourf(triPlot, pz, levels=levels, cmap=cm.bone)
+    plt.title('Robot path on contour map')
+    plt.show(block=False)
     return terrainList
 
 # Find the index of each triangle on the list of points and assign correct z height, then return the list of triangles with its associated height equation

@@ -49,22 +49,24 @@ def construct_G(terrain):
         sp.edge = []
     
     # Plot Steiner points
-    fig = plt.figure()
+    fig = plt.figure(3)
     ax = fig.gca(projection='3d')
     for sp in spList:
         ax.scatter(sp.x, sp.y, sp.z)
+    plt.title('Triangulation plotted with Steiner points')
     plt.show(block=False)
     
     # Calculate Steiner edges
     spList = connect_vertices(spList)
 
     # Plot Steiner edges   
-#    fig = plt.figure()       
-#    ax = fig.gca(projection='3d') 
-#    for sp in spList:   
-#        for edge in sp.edge:
-#            ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
-#    plt.show(block=False)
+    fig = plt.figure(4)       
+    ax = fig.gca(projection='3d') 
+    sp = spList[0]  
+    for edge in sp.edge:
+        ax.plot([edge[0],edge[3]],[edge[1],edge[4]],[edge[2],edge[5]])
+    plt.title('Example of Steiner edge generation')
+    plt.show(block=False)
     return spList
 
 def connect_vertices(spList):
