@@ -9,8 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.tri as triang
 
-points = np.array([(3, 9, 4),(3, 18, 2),(6, 30, 4),(12, 42, 2),(15, 9, 0),(15, 42, 1),(21, 21, 5),(32, 33, 0),(35, 24, 2),(35, 51, 3),(47, 30, 1),(2,1,5),(40,2,3),(7,16,2),(25,10,1)])
+points = np.array([(4, 8, 1),(3, 18, 2),(6, 35, 3),(12, 42, 2),(15, 9, 0),(15, 42, 1),(18, 25, 5),(32, 33, 0),(35, 24, 2),(35, 51, 1),(47, 30, 1),(2,1,0),(40,2,2),(7,16,3),(25,7,1),(48,21,1)])
 
 def terrain(p):
 
@@ -41,6 +42,11 @@ def terrain(p):
     ax = fig.gca(projection='3d')
     ax.plot_trisurf(px, py, pz, cmap=cm.jet, linewidth=0.2, alpha=0.5)
     plt.show(block=False)
+#    fig = plt.figure(7)
+#    triPlot= triang.Triangulation(px,py)
+#    levels = np.arange(0., 5.5, 0.25)
+#    plt.tricontourf(triPlot, pz, levels=levels, cmap=cm.bone)
+#    plt.show(block=False)
     return terrainList
 
 # Find the index of each triangle on the list of points and assign correct z height, then return the list of triangles with its associated height equation
