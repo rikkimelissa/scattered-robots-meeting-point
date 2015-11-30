@@ -15,11 +15,28 @@ This package contains four files:
 - The points used for triangulation can be changed at the top of the `plot_path` file, as can the locations of the robots, which are specified by their position in the triangle list.
 
 ## Results ##
-- Here's an image: 
-- ![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p11.png) ![text2](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p12.png)
-<img src="https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p11.png" style="float: left; width: 30%; margin-right: 1%; margin-bottom: 0.5em;">
-<img src="https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p12.png" style="float: left; width: 30%; margin-right: 1%; margin-bottom: 0.5em;">
-<p style="clear: both;">
+- This section shows the results of the algorithms. First the triangulation is shown with Steiner points and an example of Steiner edges. Next, four examples of calculated meeting points are shown. The contour map is shown with the start locations of each robot displayed as a circle of the robot's color, each robot's path in a different color, and the calculated meeting point shown as a black circle. The paths are also plotted on the terrain map and shown from various angles.
+
+- The triangulation with Steiner points added, from two angles:
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/sp1.png) ![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/sp2.png)
+- An example of a terrain face with Steiner edges:
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/se1.png)
+- Path to meeting point, example 1:
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p14.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p11.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p12.png)
+- Path to meeting point, example 2:
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p21.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p22.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p23.png)
+- Path to meeting point, example 3:
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p32.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p31.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p33.png)
+- Path to meeting point, example 4:
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p42.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p41.png)
+![text](https://raw.githubusercontent.com/rikkimelissa/scattered-robots-meeting-point/master/src/p43.png)
 
 ## Known issues ##
 - The Delaunay triangulation has issues sometimes if three points lie on a straight line.
